@@ -25,7 +25,7 @@ template_start("JKHub API: Viewing profile: $name");
     <br><br><br>
     <div class="row">
         <div class="col-lg-6">
-            <h3>Profile: <?php echo $user; ?></h3>
+            <h3>Profile: <?php echo $name; ?></h3>
             <p>Last login: <?php echo $query['lastlogin']; ?>
             <br>Member since: <?php echo $query['membersince']; ?></p>
         </div>
