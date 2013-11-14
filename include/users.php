@@ -3,8 +3,18 @@
 require 'database_access.php';
 
 $loggedIn = false;
+$acceptOurIP = false;
 
-if(isset($_SESSION['userid']))
+if(!isset($_SESSION['ip']))
+{ // no IP in this session...this MUST be set. (might cause additional logins required)
+    $_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
+}
+else if($_SESSION['ip'] === $_SERVER['REMOTE_ADDR'])
+{
+    $acceptOurIP = true; // confirmed to not have a spoofed IP
+}
+
+if(isset($_SESSION['userid']) && $acceptOurIP)
 {
 	$loggedIn = true;
 }
