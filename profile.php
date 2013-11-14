@@ -21,9 +21,8 @@ template_start("JKHub API: Viewing profile: $name");
 
 <br><br>
 <div class="container" style="width:60%;">
-    <?php template_title(); ?>
-    <i style="font-height:14px;"><a href="/dashboard.php">Go to Dashboard</a></i>
-    
+    <?php template_navbar("profile"); ?>
+    <br><br><br>
     <div class="row">
         <div class="col-lg-6">
             <h3>Profile: <?php echo $user; ?></h3>
