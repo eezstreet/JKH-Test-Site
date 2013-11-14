@@ -13,6 +13,13 @@ else if($_SESSION['ip'] === $_SERVER['REMOTE_ADDR'])
 {
     $acceptOurIP = true; // confirmed to not have a spoofed IP
 }
+else
+{
+    // spoofed!
+    unset($_SESSION['userid']);
+    unset($_SESSION['username']);
+    die("Spoofed session detected");
+}
 
 if(isset($_SESSION['userid']) && $acceptOurIP)
 {
