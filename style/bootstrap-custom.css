@@ -1,0 +1,67 @@
+/*
+ * Custom-made CSS for use on the JKHub API website --eez
+ */
+
+.messages.error {
+  padding: 15px;
+  margin-bottom:10px;
+  margin-left:5px;
+  margin-right:5px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 2.1428571435;
+  color: #FFFFFF;
+  background-color: #9C0B1E;
+  border-bottom-left-radius: 15px 15px;
+  border-bottom-right-radius: 15px 15px;
+  border-top-left-radius: 15px 15px;
+  border-top-right-radius: 15px 15px;
+}
+
+.messages.success {
+  padding: 15px;
+  margin-bottom: 10px;
+  margin-left:5px;
+  margin-right:5px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 2.1428571435;
+  color: #000000;
+  background-color: #E0FBCC;
+  border-bottom-left-radius: 15px 15px;
+  border-bottom-right-radius: 15px 15px;
+  border-top-left-radius: 15px 15px;
+  border-top-right-radius: 15px 15px;
+}
+
+.messages.warning {
+  padding: 15px;
+  margin-bottom: 10px;
+  margin-left:5px;
+  margin-right:5px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 2.1428571435;
+  color: #000000;
+  background-color: #FFFCD3;
+  border-bottom-left-radius: 15px 15px;
+  border-bottom-right-radius: 15px 15px;
+  border-top-left-radius: 15px 15px;
+  border-top-right-radius: 15px 15px;
+}
+
+.messages.information, .messages.info {
+  padding: 15px;
+  margin-bottom: 10px;
+  margin-left:5px;
+  margin-right:5px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 2.1428571435;
+  color: #000000;
+  background-color: #DFEBFB;
+  border-bottom-left-radius: 15px 15px;
+  border-bottom-right-radius: 15px 15px;
+  border-top-left-radius: 15px 15px;
+  border-top-right-radius: 15px 15px;
+}
