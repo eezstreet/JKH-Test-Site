@@ -43,3 +43,26 @@ function saltTheWound($password, $salt)
 		$retVal = hash('sha256', $retVal . $salt);
 	return $retVal;
 }
+
+function not_authorized()
+{
+    header("Location: /error.php?e=403&u=/admin.php");
+    exit;
+}
+
+function adminAuth($value)
+{
+    if(!isset($_SESSION['userid']))
+    not_authorized();
+    
+    $query = "SELECT rank FROM users WHERE id=" . $_SESSION['userid'];
+    $response = queryDB($query);
+
+    if(count($response) != 1)
+        not_authorized();
+        
+    $response = $response[0];
+
+    if($loggedIn == false || $response['rank'] != "1")
+        not_authorized();
+}

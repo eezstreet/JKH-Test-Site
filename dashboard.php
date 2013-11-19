@@ -26,7 +26,6 @@ template_start("Dashboard - JKHub API");
                 </span>
             </div>
         </form>
-        <
         <p> <?php template_copyright(); ?> </p>
     </div>
 </div>

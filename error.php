@@ -9,12 +9,12 @@ if(!isset($_GET['e']))
     header('Location: /index.php');
     die();
 }
+if(isset($_GET['u']))
+    $redirectURI = true;
+else
+    $redirectURI = false;
 $errorCode = $_GET['e'];
 $friendly = code2friendly($errorCode);
-$referrer = $_GET['r'];
-$ip = $_GET['a'];
-$request_uri = $_GET['u'];
-$host = $_GET['h'];
 template_start("$errorCode $friendly - JKHub API");
 ?>
 <div class="container" style="width:60%;">
@@ -32,11 +32,12 @@ template_start("$errorCode $friendly - JKHub API");
     
     <div class="jumbobox">
         <h3>Additional Information</h3>
-        <br>Referring Address: <?php echo $referrer; ?>
-        <br>Your IP: <?php echo $ip; ?>
-        <br>Request URI: <?php echo $request_uri; ?>
-        <br>Host: <?php echo $host; ?>
-        <br>Your Browser: <!--#echo var="HTTP_USER_AGENT" -->
+        <br>Your IP: <?php echo $_SERVER['REMOTE_ADDR']; ?>
+        <br>Your Browser: <?php echo $_SERVER['HTTP_USER_AGENT']; ?>
+        <br>Host: <?php echo $_SERVER['HTTP_HOST']; ?>
+        <?php if($redirectURI === true) { ?>
+        <br>Redirect URI: <?php echo $_GET['u']; ?>
+        <?php } ?>
     </div>
 </div>
 <?php
