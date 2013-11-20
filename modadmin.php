@@ -77,7 +77,12 @@ else if($_GET['m'] === 'az') {
 	$row = $row[0];
 	$newModID = $row['id'];
 	queryDB("CREATE TABLE modachieve_$newModID ( id int(10) PRIMARY KEY AUTO_INCREMENT, name varchar(128) UNIQUE, description text, number_achieved int(11), type int(11), count int(11) )");
-	
+    queryDB("CREATE TABLE modusers_$newModID ( id int(10) )");
+    
+    // FIXME: mega hack
+    $userrow = queryDB("SELECT id FROM users");
+    queryDB("INSERT INTO modusers_$newModID (id) SELECT id FROM users");
+    
 	$msg->add('s', "New mod registered successfully: $modName. <br>Use the Edit feature to add achievements.");
 	
 	header('Location: /admin.php');
@@ -178,6 +183,7 @@ else if($_GET['m'] === 'e') {
 				<!-- This is the tab that adds a new achievement -->
 				<form class="form-horizontal" action="modadmin.php?m=aaz" method="post">
 					<input type="hidden" name="l0" value="<?php echo $row['id']; ?>">
+                    <br>
 					<fieldset>
 					<br>
 					<!-- Form Name -->
@@ -206,7 +212,7 @@ else if($_GET['m'] === 'e') {
 					  <div class="col-md-6">
 						<div class="input-group">
 						  <span class="input-group-addon">
-							  <input type="checkbox">
+							  <input type="checkbox" name="l4" value="Yes">
 						  </span>
 						  <input id="l3" name="l3" class="form-control " type="text" placeholder="">
 						</div>
@@ -227,14 +233,40 @@ else if($_GET['m'] === 'e') {
 			</div>
 			<div class="tab-pane fade" id="n3">
 				<!-- This is the tab that edits a current achievement -->
-				<p>hi</p>
+                <form class="form-horizontal" action="modadmin.php?m=eaz" method="post">
+                    <br>
+                    <fieldset>
+                    <br>
+                    <legend>Edit Achievement</legend>
+					<input type="hidden" name="l0" value="<?php echo $row['id']; ?>">
+                    <div class="form-group">
+                        <label class="col-md-3 control-label" for="select-achievement-edit">Select Achievement</label>
+                        <div class="col-md-6">
+                            <select id="select-achievement-edit" name="a1" class="form-control select-achievement-edit">
+                                <option value="-1" selected>----------------</option>
+                                <?php
+                                foreach($acRow as $achievement) {
+                                    $acName = $achievement['name'];
+                                    $acId = $achievement['id'];
+                                    echo "<option value=\"$acId\">$acName</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="container" id="edithide">
+                        <p> horse potato </p>
+                    </div>
+                    </fieldset>
+                </form>
 			</div>
 			<div class="tab-pane fade" id="n4">
 				<!-- This is the tab that deletes a current achievement -->
 				<form class="form-horizontal" action="modadmin.php?m=daz" method="post">
 					<fieldset>
+                    <br>
 					<input type="hidden" name="k0" value="<?php echo $row['id']; ?>">
-					<br>
+					<br><br><br>
 					<!-- Form Name -->
 					<legend>Delete Achievement</legend>
 					<br>
@@ -247,7 +279,7 @@ else if($_GET['m'] === 'e') {
 								foreach($acRow as $achievement) {
 									$achievementId = $achievement['id'];
 									$achievementName = $achievement['name'];
-									echo "<select value=\"$achievementId\">$achievementName</select>";
+									echo "<option value=\"$achievementId\">$achievementName</option>";
 								}
 							?>
 						</select>
@@ -268,6 +300,7 @@ else if($_GET['m'] === 'e') {
 			<div class="tab-pane fade" id="n5">
 				<!-- This is the tab that deletes the whole mod :O -->
 				<form class="form-horizontal" action="modaction.php?m=mdz" method="post">
+                    <br>
 					<fieldset>
 					<input type="hidden" name="j0" value="<?php echo $row['id']; ?>">
 					<br>
@@ -313,6 +346,24 @@ else if($_GET['m'] === 'e') {
 			e.preventDefault()
 			$(this).tab('show')
 		})
+        // for the selection on the edit tab
+        function hideEditHide() {
+            document.getElementById('edithide').style.visibility = 'hidden';
+        }
+        function showEditHide() {
+            document.getElementById('edithide').style.visibility = 'visible';
+        }
+        $('.select-achievement-edit').change(function() {
+            var v = $( "select.select-achievement-edit option:selected").val();
+            
+            if(v == -1)
+                hideEditHide();
+            else
+                showEditHide();
+        });
+        $(document).ready(function() {
+            hideEditHide();
+        });
 	</script>
 	<?php
 	template_end_noscripts();
@@ -338,6 +389,58 @@ else if($_GET['m'] === 'ez1') {
 }
 else if($_GET['m'] === 'aaz') {
 	// creating new achievement
+    if(!isset($_POST['l0']) || !isset($_POST['l1']) || !isset($_POST['l2'])) {
+        $msg->add('e', "Invalid form data.");
+        header('Location: /admin.php');
+        exit;
+    }
+    
+    $modId = escapeDB($_POST['l0']);
+    if($modId < 0) {
+        $msg->add('e', "Invalid form data.");
+        header('Location: /admin.php');
+        exit;
+    }
+    
+    if(!isset($_POST['l4'])) {
+        // non-integral type
+        $integral = false;
+        $numNeed = 1;
+    }
+    else {
+        $integral = true;
+        if(!isset($_POST['l3'])) {
+            $msg->add('e', "No value given for integral type");
+            header("Location: /modadmin.php?m=e&m1=$modId");
+            exit;
+        }
+        $numNeed = escapeDB($_POST['l3']);
+    }
+    
+    $name = escapeDB($_POST['l1']);
+    $desc = escapeDB($_POST['l2']);
+    
+    // make sure that we don't already have an achievement by this name
+    $entries = queryDB("SELECT * FROM modachieve_$modId WHERE name='$name'");
+    if(count($entries) > 0) {
+        $msg->add('e', "An achievement by this name already exists.");
+        header("Location: /modadmin.php?m=e&m1=$modId");
+        exit;
+    }
+    
+    queryDB("INSERT INTO modachieve_$modId (name, description, number_achieved, type, count) VALUES ('$name', '$desc', '0', '$integral', '$numNeed')");
+    // forgive me for the below
+    $row = queryDB("SELECT id FROM modachieve_$modId WHERE name='$name'");
+    $row = $row[0];
+    
+    $achieveId = $row['id'];
+    // end forgiving
+    queryDB("ALTER TABLE modusers_$modId ADD progress_$achieveId int(10) DEFAULT 0");
+    queryDB("ALTER TABLE modusers_$modId ADD unlocked_$achieveId date");
+    
+    $msg->add('s', "Successfully added new achievement: $name");
+    header("Location: /modadmin.php?m=e&m1=$modId");
+    exit;
 }
 else if($_GET['m'] === 'eaz') {
 	// editing current achievement
@@ -370,6 +473,7 @@ else if($_GET['m'] === 'mdz') {
 	$id = escapeDB($_POST['j0']);
 	queryDB("DELETE FROM mods WHERE id=$id");
 	queryDB("DROP modachieve_$id");
+    queryDB("DROP modusers_$id");
 	
 	$msg->add('s', "Successfully deleted mod.");
 	header('Location: /admin.php');

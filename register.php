@@ -62,6 +62,16 @@ else if(!empty($_POST))
     
     queryDB("INSERT INTO users (username, password, salt, membersince)
              VALUES ('$user', '$passwordHashed', '$saltyFries', NOW())");
+    
+    // FIXME: HACK
+    $mods = queryDB("SELECT id FROM mods");
+    $userId = queryDB("SELECT id FROM users WHERE username='$user'");
+    $userId = $userId[0];
+    $userId = $userId['id'];
+    foreach($mods as $mod) {
+        $modId = $mod['id'];
+        queryDB("INSERT INTO modusers_$modId (id) VALUES ($userId)");
+    }
     $msg->add('s', "Successfully registered! You may now login.");
     header('Location: /index.php');
 }
