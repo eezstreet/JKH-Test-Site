@@ -233,32 +233,36 @@ else if($_GET['m'] === 'e') {
 			</div>
 			<div class="tab-pane fade" id="n3">
 				<!-- This is the tab that edits a current achievement -->
-                <form class="form-horizontal" action="modadmin.php?m=eaz" method="post">
-                    <br>
-                    <fieldset>
-                    <br>
+                <br>
+                <form>
                     <legend>Edit Achievement</legend>
-					<input type="hidden" name="l0" value="<?php echo $row['id']; ?>">
-                    <div class="form-group">
-                        <label class="col-md-3 control-label" for="select-achievement-edit">Select Achievement</label>
-                        <div class="col-md-6">
-                            <select id="select-achievement-edit" name="a1" class="form-control select-achievement-edit">
-                                <option value="-1" selected>----------------</option>
-                                <?php
-                                foreach($acRow as $achievement) {
-                                    $acName = $achievement['name'];
-                                    $acId = $achievement['id'];
-                                    echo "<option value=\"$acId\">$acName</option>";
-                                }
-                                ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="container" id="edithide">
-                        <p> horse potato </p>
-                    </div>
-                    </fieldset>
                 </form>
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                    <?php
+                        foreach($acRow as $achievement) {
+                            $acName = $achievement['name'];
+                            $acId = $achievement['id'];
+                            $acDescription = $achievement['description'];
+                            $acType = $achievement['type'];
+                            ?>
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="<?php echo "#acac$acId"; ?>">
+                                        <?php echo $acName; ?>
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="<?php echo "acac$acId"; ?>" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    horse potato
+                                </div>
+                            </div>
+                            <?php
+                        }
+                    ?>
+                    </div>
+                </div>
 			</div>
 			<div class="tab-pane fade" id="n4">
 				<!-- This is the tab that deletes a current achievement -->
@@ -346,24 +350,6 @@ else if($_GET['m'] === 'e') {
 			e.preventDefault()
 			$(this).tab('show')
 		})
-        // for the selection on the edit tab
-        function hideEditHide() {
-            document.getElementById('edithide').style.visibility = 'hidden';
-        }
-        function showEditHide() {
-            document.getElementById('edithide').style.visibility = 'visible';
-        }
-        $('.select-achievement-edit').change(function() {
-            var v = $( "select.select-achievement-edit option:selected").val();
-            
-            if(v == -1)
-                hideEditHide();
-            else
-                showEditHide();
-        });
-        $(document).ready(function() {
-            hideEditHide();
-        });
 	</script>
 	<?php
 	template_end_noscripts();
