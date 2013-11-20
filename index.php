@@ -15,7 +15,7 @@ $msg = new Messages();
 		<h1>JKHub API</h1>
 		<p class="lead">The next big thing to hit Jedi Academy. Join the revolution. </p>
         <?php
-        if($loggedIn) {
+        if($GLOBALS['loggedIn']) {
             $displayUsername = "<a href=\"profile.php?u=" . $_SESSION['userid'] ."\">" . $_SESSION['username'] . "</a>";
             echo "<p><i style=\"font-size:14px;\">Welcome, $displayUsername.</i>";
         ?>

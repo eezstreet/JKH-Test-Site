@@ -5,12 +5,12 @@ require_once 'include/messages.php';
 
 $msg = new Messages();
 
-if($loggedIn == false) {
+if($GLOBALS['loggedIn'] == false) {
     die("You are not logged in.");
 }
 else
 {
-    $loggedIn = false;
+    $GLOBALS['loggedIn'] = false;
     $msg->add('s', "Logged out.");
     unset($_SESSION['userid']);
     unset($_SESSION['username']);

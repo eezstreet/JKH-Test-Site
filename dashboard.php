@@ -3,7 +3,7 @@ if(!session_id()) session_start();
 require_once 'include/users.php';
 require_once 'include/template.php';
 
-if($loggedIn == false) {
+if($GLOBALS['loggedIn'] == false) {
     header('Location: /index.php');
     die();
 }

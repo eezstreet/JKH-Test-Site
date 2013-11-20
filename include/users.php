@@ -2,12 +2,13 @@
 
 require 'database_access.php';
 
-$loggedIn = false;
+$GLOBALS['loggedIn'] = false;
 $acceptOurIP = false;
 
 if(!isset($_SESSION['ip']))
 { // no IP in this session...this MUST be set. (might cause additional logins required)
     $_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
+	$acceptOurIP = true;
 }
 else if($_SESSION['ip'] === $_SERVER['REMOTE_ADDR'])
 {
@@ -23,12 +24,12 @@ else
 
 if(isset($_SESSION['userid']) && $acceptOurIP)
 {
-	$loggedIn = true;
+	$GLOBALS['loggedIn'] = true;
 }
 
 function getUserNameFromId($userId)
 {
-	if($loggedIn == false)
+	if($GLOBALS['loggedIn'] == false)
 		return "";
         
     $safeUserid = cleanDB($userid);
@@ -53,8 +54,8 @@ function not_authorized()
 function adminAuth($value)
 {
     if(!isset($_SESSION['userid']))
-    not_authorized();
-    
+		not_authorized();
+		
     $query = "SELECT rank FROM users WHERE id=" . $_SESSION['userid'];
     $response = queryDB($query);
 
@@ -63,6 +64,6 @@ function adminAuth($value)
         
     $response = $response[0];
 
-    if($loggedIn == false || $response['rank'] != "1")
+    if($GLOBALS['loggedIn'] == false || $response['rank'] != "1")
         not_authorized();
 }

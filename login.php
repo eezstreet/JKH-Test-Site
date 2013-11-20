@@ -6,7 +6,7 @@ require_once 'include/messages.php';
 
 $msg = new Messages();
 
-if($loggedIn == true)
+if($GLOBALS['loggedIn'] == true)
 {
     $msg->add('s', 'Successfully logged in.');
 	header("Location: /index.php");
@@ -42,7 +42,7 @@ else if(!empty($_POST))
 	}
 	else
 	{ // Page for "Everything OK"
-		$loggedIn = true;
+		$GLOBALS['loggedIn'] = true;
 		$_SESSION['userid'] = $row['id'];
         $_SESSION['username'] = $row['username'];
 		$msg->add('s', 'Successfully logged in');

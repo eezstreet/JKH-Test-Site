@@ -13,7 +13,7 @@ function YourRegistrationSucks($msg, $message)
     die();
 }
 
-if($loggedIn == true)
+if($GLOBALS['loggedIn'] == true)
 {
     $msg->add('s', "Successfully logged in.");
     header('Location: /index.php');
