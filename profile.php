@@ -10,7 +10,7 @@ function LynchTheUser() {
 
 if(!isset($_GET['u']))
     LynchTheUser();
-$id = $_GET['u'];
+$id = escapeDB($_GET['u']);
 $query = queryDB("SELECT * FROM users WHERE id=$id");
 if(count($query) != 1)
     LynchTheUser();
@@ -30,10 +30,8 @@ template_start("JKHub API: Viewing profile: $name");
             <br>Member since: <?php echo $query['membersince']; ?></p>
         </div>
         <div class="col-lg-6">
-            <div class="jumbobox">
-                <h3>Recent Achievements</h3>
-                <p><i style="font-height:14px;">Achievement system not currently functional.</i></p>
-            </div>
+            <h3>Recent Achievements</h3>
+			<i style="font-height:8px;">Check back soon! The system is almost here!</i>
         </div>
     </div>
     <div class="row">

@@ -245,6 +245,7 @@ else if($_GET['m'] === 'e') {
                             $acId = $achievement['id'];
                             $acDescription = $achievement['description'];
                             $acType = $achievement['type'];
+							$acCount = $achievement['count'];
                             ?>
                             <div class="panel-heading">
                                 <h4 class="panel-title">
@@ -255,27 +256,56 @@ else if($_GET['m'] === 'e') {
                             </div>
                             <div id="<?php echo "acac$acId"; ?>" class="panel-collapse collapse">
                                 <div class="panel-body">
-                                    horse potato
+                                    <form class="form-horizontal" action="modadmin.php?m=eaz" method="post">
+										<fieldset>
+										<input type="hidden" name="k0" value="<?php echo $acId; ?>">
+										<input type="hidden" name="kk" value="<?php echo $row['id']; ?>">
+										<!-- Text input-->
+										<div class="form-group required-control">
+										  <label class="col-md-3 control-label" for="l1">Name</label>
+										  <div class="col-md-6">
+											<input id="l1" name="k1" type="text" placeholder="Name" class="form-control " required="" value="<?php echo $acName; ?>">
+											
+										  </div>
+										</div>
+
+										<!-- Textarea -->
+										<div class="form-group required-control">
+										  <label class="col-md-3 control-label" for="l2">Description</label>
+										  <div class="col-md-6">
+											<textarea id="l2" name="k2" required="" class="form-control "><?php echo $acDescription; ?></textarea>
+										  </div>
+										</div>
+
+										<!-- Prepended checkbox -->
+										<div class="form-group">
+										  <label class="col-md-3 control-label" for="l3">Integral</label>
+										  <div class="col-md-6">
+											<div class="input-group">
+											  <span class="input-group-addon">
+												  <input type="checkbox" name="k4" value="Yes" <?php if($acType === '1') echo "checked";?>>
+											  </span>
+											  <input id="l3" name="k3" class="form-control " type="text" placeholder="" <?php if($acType === '1') echo "value=\"$acCount\""; ?>>
+											</div>
+											<p class="help-block">If checked, the achievement will be integral and report progress. If not checked, the achievement will be boolean (locked/unlocked). Enter amount to unlock in the text area.</p>
+										  </div>
+										</div>
+
+										<!-- Button -->
+										<div class="form-group">
+										  <label class="col-md-3 control-label" for="submit"></label>
+										  <div class="col-lg-6">
+											<button id="submit" name="submit" class="btn btn-primary">Edit Achievement</button>
+										  </div>
+										</div>
+										</fieldset>
+									</form>
                                 </div>
                             </div>
                             <?php
                         }
                     ?>
                     </div>
-                    <div class="panel panel-default">
-                  <div class="panel-heading">
-                    <h4 class="panel-title">
-                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" class="collapsed">
-                        Collapsible Group Item #2
-                      </a>
-                    </h4>
-                  </div>
-                  <div id="collapseTwo" class="panel-collapse collapse" style="height: 0px;">
-                    <div class="panel-body">
-                      Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-                    </div>
-                  </div>
-                </div>
                 </div>
 			</div>
 			<div class="tab-pane fade" id="n4">
@@ -382,7 +412,7 @@ else if($_GET['m'] === 'ez1') {
 	$v3 = escapeDB($_POST['m2']);						// new description
 	$v4 = (escapeDB($_POST['m3']) === "Yes") ? 1 : 0;	// visible?
 	
-	queryDB("UPDATE mods SET name='$v2', description='$v3', visible=$v4 WHERE id=$v1");
+	queryDB("UPDATE mods SET name='$v2', description='$v3', visible='$v4' WHERE id='$v1'");
 	$msg->add('s', "Successfully updated mod information.");
 	header('Location: /admin.php');
 	exit;
@@ -444,6 +474,67 @@ else if($_GET['m'] === 'aaz') {
 }
 else if($_GET['m'] === 'eaz') {
 	// editing current achievement
+	// fields are:
+	// - k0 = achievement ID
+	// - k1 = achievement name
+	// - k2 = achievement description
+	// - k3 = "Yes" = integral
+	// - k4 = integral count
+	// - kk = mod ID
+	
+	// creating new achievement
+    if(!isset($_POST['k0']) || !isset($_POST['k1']) || !isset($_POST['k2']) || !isset($_POST['kk'])) {
+        $msg->add('e', "Invalid form data.");
+        header('Location: /admin.php');
+        exit;
+    }
+    
+    $modId = escapeDB($_POST['kk']);
+    if($modId < 0) {
+        $msg->add('e', "Invalid form data.");
+        header('Location: /admin.php');
+        exit;
+    }
+	
+	$achieveId = escapeDB($_POST['k0']);
+	if($achieveId < 0) {
+		$msg->add('e', "Invalid form data.");
+		header('Location: /admin.php');
+		exit;
+	}
+    
+    if(!isset($_POST['k4'])) {
+        // non-integral type
+        $integral = false;
+        $numNeed = 1;
+    }
+    else {
+        $integral = true;
+        if(!isset($_POST['k3'])) {
+            $msg->add('e', "No value given for integral type");
+            header("Location: /modadmin.php?m=e&m1=$modId");
+            exit;
+        }
+        $numNeed = escapeDB($_POST['k3']);
+    }
+    
+    $name = escapeDB($_POST['k1']);
+    $desc = escapeDB($_POST['k2']);
+    
+    // make sure that we don't already have an achievement by this name
+    $entries = queryDB("SELECT * FROM modachieve_$modId WHERE name='$name'");
+	$firstEntry = $entries[0];
+    if(count($entries) > 1 || (count($entries) === 1 && $firstEntry['id'] != $achieveId)) {
+        $msg->add('e', "An achievement by this name already exists.");
+        header("Location: /modadmin.php?m=e&m1=$modId");
+        exit;
+    }
+    
+    queryDB("UPDATE modachieve_$modId SET name='$name', description='$desc', type='$integral', count='$numNeed' WHERE id='$achieveId'");
+    
+    $msg->add('s', "Successfully edited achievement: $name");
+    header("Location: /modadmin.php?m=e&m1=$modId");
+    exit;
 }
 else if($_GET['m'] === 'daz') {
 	// deleting an achievement
