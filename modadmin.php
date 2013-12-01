@@ -127,6 +127,7 @@ else if($_GET['m'] === 'e') {
 			<li><a href="#n3" data-toggle="tab">Edit Achievement</a></li>
 			<li><a href="#n4" data-toggle="tab">Delete Achievement</a></li>
 			<li><a href="#n5" data-toggle="tab">Delete Mod</a></li>
+            <li><a href="#n6" data-toggle="tab">Give Achievement</a></li>
 		</ul>
 		<!-- tab panes -->
 		<div class="tab-content">
@@ -366,6 +367,58 @@ else if($_GET['m'] === 'e') {
 					</fieldset>
 				</form>
 			</div>
+            <div class="tab-pane fade" id="n6">
+                <!-- This is the tab that gives someone an achievement for test purposes -->
+                <form class="form-horizontal" action="modaction.php?m=ggmz" method="post">
+                    <br>
+                    <fieldset>
+                    <input type="hidden" name="j0" value="<?php echo $row['id']; ?>">
+                    <br>
+                    <!-- Form Name -->
+                    <legend>Give Achievement</legend>
+                    <br>
+                    <!-- Select 1 (Select achievement) -->
+                    <div class="form-group">
+					  <label class="col-md-3 control-label" for="k1">Select Achievement</label>
+					  <div class="col-md-6">
+						<select id="k1" name="k1" class="form-control ">
+							<?php
+								foreach($acRow as $achievement) {
+									$achievementId = $achievement['id'];
+									$achievementName = $achievement['name'];
+									echo "<option value=\"$achievementId\">$achievementName</option>";
+								}
+							?>
+						</select>
+					  </div>
+					</div>
+                    
+                    <!-- Select 2 (Select person) -->
+                    <div class="form-group">
+					  <label class="col-md-3 control-label" for="k2">Select User</label>
+					  <div class="col-md-6">
+						<select id="k2" name="k2" class="form-control ">
+							<?php
+                                $users = queryDB("SELECT * FROM users");
+								foreach($users as $user) {
+									$userId = $user['id'];
+									$userName = $user['username'];
+									echo "<option value=\"$userId\">$userName</option>";
+								}
+							?>
+						</select>
+					  </div>
+					</div>
+                    <!-- Button -->
+                    <div class="form-group">
+                        <div class="col-lg-6">
+                            <button id="submit" name="submit" class="btn btn-primary">Give Achievement</button>
+                        </div>
+                    </div>
+                    
+                    </fieldset>
+                </form>
+            </div>
 		</div>
 		<?php template_copyright(); ?>
 	</div>
@@ -569,4 +622,30 @@ else if($_GET['m'] === 'mdz') {
 	$msg->add('s', "Successfully deleted mod.");
 	header('Location: /admin.php');
 	exit;
+}
+else if($_GET['m'] === 'ggmz') {
+    // giving an achievement to somebody
+    // k0 is mod id
+    // k1 is achievement ID
+    // k2 is user ID
+    if(!isset($_POST['k0']) || !isset($_POST['k1']) || !isset($_POST['k2'])) {
+        $msg->add('e', "Invalid form data.");
+        header('Location: /admin.php');
+    }
+    
+    $modId = escapeDB($_POST['k0']);
+    $achieveId = escapeDB($_POST['k1']);
+    $userId = escapeDB($_POST['k2']);
+    $user = queryDB("SELECT * FROM users WHERE id='$userId'");
+    
+    $herpaderp = queryDB("SELECT type,count FROM modachieve_$modId WHERE id='$achieveId'");
+    $herpaderp = $herpaderp[0];
+    if($herpaderp['type'] == '0') {
+        queryDB("UPDATE modusers_$modId SET progress_$achieveId='1', unlocked_$achieveId=NOW() WHERE id='$userID'");
+    } else {
+        $maxCount = $herpaderp['count'];
+        queryDB("UPDATE modusers_$modId SET progress_$achieveId='$maxCount', unlocked_$achieveId=NOW() WHERE id='$userId'");
+    }
+    queryDB("UPDATE modachieve_$modId SET number_achieved = number_achieved + 1 WHERE id='$achieveId'");
+    queryDB("INSERT INTO status(user, type, extraint, extraint2, timestamp) VALUES ('$userId', '1', '$modId', '$achieveId', NOW())");
 }
