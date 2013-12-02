@@ -8,9 +8,9 @@ function template_start($titleVar)
 			<meta charset="utf-8">
 			<meta name="author" content="eezstreet">
 			<!-- TODO: favicon -->
-			<link href="/style/bootstrap.css" rel="stylesheet">
-			<link href="/style/bootstrap-theme.css" rel="stylesheet">
-            <link href="/style/bootstrap-custom.css" rel="stylesheet">
+			<link href="style/bootstrap.css" rel="stylesheet">
+			<link href="style/bootstrap-theme.css" rel="stylesheet">
+            <link href="style/bootstrap-custom.css" rel="stylesheet">
 			<title><?php echo $titleVar ?></title>
 		</head>
 		<body>
@@ -20,8 +20,8 @@ function template_start($titleVar)
 function template_end()
 {
 	?>
-		<script src="/scripts/jquery.js"></script>
-		<script src="/scripts/bootstrap.min.js"></script>
+		<script src="scripts/jquery.js"></script>
+		<script src="scripts/bootstrap.min.js"></script>
 		</body>
 	</html>
 	<?php
@@ -30,8 +30,8 @@ function template_end()
 function template_end_onlyscripts()
 {
 	?>
-		<script src="/scripts/jquery.js"></script>
-		<script src="/scripts/bootstrap.min.js"></script>
+		<script src="scripts/jquery.js"></script>
+		<script src="scripts/bootstrap.min.js"></script>
 	<?php
 }
 
